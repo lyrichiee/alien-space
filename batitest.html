@@ -531,6 +531,7 @@
 </div>
 
 <script>
+ <script>
   function showFinalResult() {
     const l1 = window.part1Letter;
     const l2 = window.part2Letter;
@@ -539,6 +540,20 @@
     const code = `${l1}${l2}${l3}${l4}`;
     document.getElementById('part4-container').style.display = 'none';
     document.getElementById('final-result-container').style.display = 'block';
+
+    // ✅ 提交至 Google 表单
+    const formData = new FormData();
+    formData.append("entry.1786865040", code);
+
+    fetch("https://docs.google.com/forms/d/e/1V2AXPRfZeIbw5GgQudN29RWV8lDfqb8c45WdfXs5Htc/formResponse", {
+      method: "POST",
+      mode: "no-cors",
+      body: formData
+    })
+    .then(() => console.log("✅ 数据已提交"))
+    .catch(err => console.error("❌ 提交失败：", err));
+
+    alert(`✔️ 你的 BATI 测试结果是「${code}」\n结果已成功记录！`);
 
     const schoolMap = {
   HEBO: {
