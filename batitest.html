@@ -626,6 +626,9 @@ fetch("https://script.google.com/macros/s/AKfycbwPkZVrZBEkA8xzl-CFnhfiV3vJs4RdIM
   method: "POST",
   body: formData
 });
+    .then(res => res.text())
+.then(msg => console.log("✅ 返回消息：", msg))
+.catch(err => console.error("❌ 上传失败：", err));
   }
 </script>
 
