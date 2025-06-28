@@ -2,16 +2,21 @@
 <html lang="zh">
 <head>
   <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>英校人格测试</title>
   <style>
     body {
       font-family: Arial, sans-serif;
       background: #f4f4f4;
-      margin: 0; padding: 0;
-      display: flex; justify-content: center; align-items: center;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
       height: 100vh;
       overflow: hidden;
     }
+
     .slider-container {
       width: 90%;
       max-width: 600px;
@@ -20,18 +25,25 @@
       border-radius: 12px;
       overflow: hidden;
     }
+
     .slide {
       display: none;
       padding: 30px;
       animation: fade 0.5s;
     }
+
     .slide.active {
       display: block;
     }
-    h3 { color: #333366; }
+
+    h3 {
+      color: #333366;
+    }
+
     .btn-group {
       margin-top: 20px;
     }
+
     .btn-group button {
       margin: 8px 0;
       width: 100%;
@@ -43,22 +55,69 @@
       cursor: pointer;
       transition: all 0.2s;
     }
+
     .btn-group button:hover {
       background: #d0d0ff;
     }
+
     .result {
       padding: 30px;
       text-align: center;
     }
+
     .next-button {
       margin: 15px auto;
       padding: 10px 25px;
       font-size: 16px;
       display: block;
     }
+
     @keyframes fade {
       from { opacity: 0; }
       to { opacity: 1; }
+    }
+
+    /* ✅ 移动端适配增强 */
+    @media (max-width: 768px) {
+      body {
+        flex-direction: column;
+        height: auto;
+        overflow: auto;
+        padding: 20px;
+        align-items: flex-start;
+      }
+
+      .slider-container {
+        width: 100%;
+        box-shadow: none;
+        border-radius: 0;
+        margin-top: 20px;
+      }
+
+      .slide {
+        padding: 20px;
+      }
+
+      .btn-group button {
+        font-size: 18px;
+        padding: 14px;
+      }
+
+      .next-button {
+        width: 100%;
+        font-size: 18px;
+      }
+
+      .result {
+        font-size: 18px;
+        text-align: left;
+        line-height: 1.6;
+      }
+
+      h3 {
+        font-size: 22px;
+        text-align: center;
+      }
     }
   </style>
 </head>
