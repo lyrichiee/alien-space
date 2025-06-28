@@ -530,7 +530,6 @@
   <div class="result" id="finalText" style="padding: 30px; text-align: center;"></div>
 </div>
 
-<script>
  <script>
   function showFinalResult() {
     const l1 = window.part1Letter;
@@ -632,18 +631,6 @@ const resultText = schoolResult
 
 
     document.getElementById('finalText').innerHTML = resultText;
-
-// ✅ 替换为表单方式提交
-const formData = new FormData();
-formData.append("code", code);
-
-fetch("https://script.google.com/macros/s/AKfycbwPkZVrZBEkA8xzl-CFnhfiV3vJs4RdIMvvC5iwYQbTgy2-36b0X77_7_IUW2bnlqOGVA/exec", {
-  method: "POST",
-  body: formData
-})
-.then(res => res.text())
-.then(msg => console.log("✅ 返回消息：", msg))
-.catch(err => console.error("❌ 上传失败：", err));
   }
 </script>
 
