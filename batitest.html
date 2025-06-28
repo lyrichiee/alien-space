@@ -1,0 +1,633 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+  <meta charset="UTF-8" />
+  <title>英校人格测试</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f4f4f4;
+      margin: 0; padding: 0;
+      display: flex; justify-content: center; align-items: center;
+      height: 100vh;
+      overflow: hidden;
+    }
+    .slider-container {
+      width: 90%;
+      max-width: 600px;
+      background: #fff;
+      box-shadow: 0 0 12px rgba(0,0,0,0.2);
+      border-radius: 12px;
+      overflow: hidden;
+    }
+    .slide {
+      display: none;
+      padding: 30px;
+      animation: fade 0.5s;
+    }
+    .slide.active {
+      display: block;
+    }
+    h3 { color: #333366; }
+    .btn-group {
+      margin-top: 20px;
+    }
+    .btn-group button {
+      margin: 8px 0;
+      width: 100%;
+      padding: 12px;
+      font-size: 16px;
+      background: #e0e0f0;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .btn-group button:hover {
+      background: #d0d0ff;
+    }
+    .result {
+      padding: 30px;
+      text-align: center;
+    }
+    .next-button {
+      margin: 15px auto;
+      padding: 10px 25px;
+      font-size: 16px;
+      display: block;
+    }
+    @keyframes fade {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+  </style>
+</head>
+<body>
+<!-- 欢迎页 -->
+<div class="slider-container" id="welcome-container">
+  <div class="result" style="padding: 30px;">
+    <p style="white-space: pre-line;">
+欢迎来到老鹰美术择校（本科版）测试题（BATI）中：）
+
+在本测试题中，每当你做了五道题，就会得到一个神秘字母，最终，你会得到一个四个字母的组合。
+请你记好这四个字母组成的神秘组合，它会帮你筛选出和你的预期比较符合的学校：）
+
+我们为这些学校设立了四个考察维度，分别是声誉度（Reputation）、投入度（Investment）、学术需求（Academic Requirements）和包容度（Inclusiveness），以此分出16种校格。
+
+请注意，你最终得到的结果并不代表完全准确，仅供参考。
+如果准备好了，就让我们开始吧！：）
+
+——本测试由 spacealien 制作
+    </p>
+
+    <h4 style="margin-top: 30px;">请你选择是否同意此测试，选择“不同意”本试卷将会直接退出：</h4>
+    <div class="btn-group" style="margin-top: 20px;">
+      <button onclick="startTest()">我同意</button>
+      <button onclick="exitTest()">我不同意</button>
+    </div>
+  </div>
+</div>
+
+<p style="text-align: center; margin-top: 30px;">
+  <a href="https://www.freeprivacypolicy.com/live/1ec1404f-0925-4455-b2b1-fd5784b40e33" target="_blank" style="font-size: 14px; color: #666; text-decoration: underline;">
+    查看《隐私声明》
+  </a>
+</p>
+
+<script>
+  function startTest() {
+    // 隐藏欢迎页
+    document.getElementById('welcome-container').style.display = 'none';
+
+    // 显示第一部分题目
+    const part1 = document.getElementById('part1-container');
+    if (part1) {
+      part1.style.display = 'block';
+    } else {
+      alert("出错啦，找不到第一部分内容！");
+    }
+  }
+
+  function exitTest() {
+    alert("你已选择不同意，页面将关闭。如无法关闭，请手动关闭页面或返回上一页。");
+    window.close();
+    // 如果关闭失败，回退：
+    setTimeout(() => {
+      history.back();
+    }, 1000);
+  }
+</script>
+</body>
+</html>
+<!-- 第一部分：择校偏好（H vs L + 反向题支持） -->
+<div class="slider-container" id="part1-container" style="display:none;">
+  <div id="part1-slides"></div>
+  <div class="result" id="part1-result" style="display:none;"></div>
+  <button id="nextBtn" class="next-button" style="display:none;" onclick="goToNextPart()">继续测试</button>
+</div>
+
+<script>
+  const part1Questions = [
+    {
+      text: "我更倾向于QS排名更高的学校。",
+      h: [1, 2, 3, 4, 5, 6],
+      l: [6, 5, 4, 3, 2, 1]
+    },
+    {
+      text: "如果我被艺术院校和综合院校同时发放offer，我会选择综合院校。",
+      h: [1, 2, 3, 4, 5, 6],
+      l: [6, 5, 4, 3, 2, 1]
+    },
+    {
+      text: "我打算在英国念完书后回国，所以我更倾向于选择国内公司认可度高的学校。",
+      h: [1, 2, 3, 4, 5, 6],
+      l: [6, 5, 4, 3, 2, 1]
+    },
+    {
+      text: "对我来说，学校能否为我提供专业的支持（工坊、studio、实习、合作等）是非常重要的。",
+      h: [6, 5, 4, 3, 2, 1], // 反向题
+      l: [1, 2, 3, 4, 5, 6]
+    },
+    {
+      text: "我喜欢艺术氛围很强的学校，即使我知道它不被排名认可。",
+      h: [6, 5, 4, 3, 2, 1], // 反向题
+      l: [1, 2, 3, 4, 5, 6]
+    }
+  ];
+
+  const part1OptionsText = [
+    "非常不同意（1分）",
+    "不同意（2分）",
+    "比较不同意（3分）",
+    "比较同意（4分）",
+    "同意（5分）",
+    "非常同意（6分）"
+  ];
+
+  let part1H = 0;
+  let part1L = 0;
+  let current1 = 0;
+
+  function buildPart1Slides() {
+    const container = document.getElementById('part1-slides');
+    part1Questions.forEach((qObj, index) => {
+      const slide = document.createElement('div');
+      slide.className = 'slide' + (index === 0 ? ' active' : '');
+      slide.innerHTML = `<h3>${index + 1}. ${qObj.text}</h3>`;
+      const btnGroup = document.createElement('div');
+      btnGroup.className = 'btn-group';
+
+      part1OptionsText.forEach((label, i) => {
+        const btn = document.createElement('button');
+        btn.textContent = label;
+        btn.onclick = () => {
+          part1H += qObj.h[i];
+          part1L += qObj.l[i];
+          document.querySelectorAll('#part1-slides .slide')[current1].classList.remove('active');
+          current1++;
+          if (current1 < part1Questions.length) {
+            document.querySelectorAll('#part1-slides .slide')[current1].classList.add('active');
+          } else {
+            showPart1Result();
+          }
+        };
+        btnGroup.appendChild(btn);
+      });
+
+      slide.appendChild(btnGroup);
+      container.appendChild(slide);
+    });
+  }
+
+  function showPart1Result() {
+    document.getElementById('part1-slides').style.display = 'none';
+    const resultBox = document.getElementById('part1-result');
+    document.getElementById('nextBtn').style.display = 'inline-block';
+
+    const letter = part1H > part1L ? 'H' : 'L';
+    const text = letter === 'H'
+      ? "太棒了，你得到了第一个字母：H！请你记好这个字母，让我们继续测试！"
+      : "太棒了，你得到了第一个字母：L！请你记好这个字母，让我们继续测试！";
+
+    resultBox.textContent = text;
+    document.getElementById('nextBtn').setAttribute('data-letter', letter);
+    resultBox.style.display = 'block';
+  }
+
+  function goToNextPart() {
+    const letter = document.getElementById('nextBtn').getAttribute('data-letter');
+    window.part1Letter = letter;
+    document.getElementById('part1-container').style.display = 'none';
+    document.getElementById('part2-container').style.display = 'block';
+    buildPart2Slides();
+  }
+
+  buildPart1Slides();
+</script>
+<!-- 第二部分：生活偏好（E vs C 双维度 + 反向题） -->
+<div class="slider-container" id="part2-container" style="display:none;">
+  <div id="part2-slides"></div>
+  <div class="result" id="part2-result" style="display:none;"></div>
+  <button id="part2-nextBtn" class="next-button" style="display:none;" onclick="goToPart3()">继续测试</button>
+</div>
+
+<script>
+  const part2Questions = [
+    {
+      text: "在英国期间，我更倾向于多进行一些花费较大娱乐活动（去蹦迪、买奢侈品、旅游等）。",
+      e: [1, 2, 3, 4, 5, 6],
+      c: [6, 5, 4, 3, 2, 1]
+    },
+    {
+      text: "对我来说，学校花费（学费、材料购买费等）再贵也是无所谓的。",
+      e: [1, 2, 3, 4, 5, 6],
+      c: [6, 5, 4, 3, 2, 1]
+    },
+    {
+      text: "比起和别人同住一个宿舍（en-suite），我更喜欢住独立的、功能齐全的属于自己的空间（studio）。",
+      e: [1, 2, 3, 4, 5, 6],
+      c: [6, 5, 4, 3, 2, 1]
+    },
+    {
+      text: "我会做饭，并且我确定在英国期间会常常做饭。",
+      e: [6, 5, 4, 3, 2, 1], // 反向题
+      c: [1, 2, 3, 4, 5, 6]
+    },
+    {
+      text: "我更喜欢安静惬意的中小城市，而并非喧哗发达的大城市。",
+      e: [6, 5, 4, 3, 2, 1], // 反向题
+      c: [1, 2, 3, 4, 5, 6]
+    }
+  ];
+
+  const part2OptionsText = [
+    "非常不同意（1分）",
+    "不同意（2分）",
+    "比较不同意（3分）",
+    "比较同意（4分）",
+    "同意（5分）",
+    "非常同意（6分）"
+  ];
+
+  let part2E = 0;
+  let part2C = 0;
+  let current2 = 0;
+
+  function buildPart2Slides() {
+    const container = document.getElementById('part2-slides');
+    part2Questions.forEach((qObj, index) => {
+      const slide = document.createElement('div');
+      slide.className = 'slide' + (index === 0 ? ' active' : '');
+      slide.innerHTML = `<h3>${index + 1}. ${qObj.text}</h3>`;
+      const btnGroup = document.createElement('div');
+      btnGroup.className = 'btn-group';
+
+      part2OptionsText.forEach((label, i) => {
+        const btn = document.createElement('button');
+        btn.textContent = label;
+        btn.onclick = () => {
+          part2E += qObj.e[i];
+          part2C += qObj.c[i];
+          document.querySelectorAll('#part2-slides .slide')[current2].classList.remove('active');
+          current2++;
+          if (current2 < part2Questions.length) {
+            document.querySelectorAll('#part2-slides .slide')[current2].classList.add('active');
+          } else {
+            showPart2Result();
+          }
+        };
+        btnGroup.appendChild(btn);
+      });
+
+      slide.appendChild(btnGroup);
+      container.appendChild(slide);
+    });
+  }
+
+  function showPart2Result() {
+    document.getElementById('part2-slides').style.display = 'none';
+    const resultBox = document.getElementById('part2-result');
+    document.getElementById('part2-nextBtn').style.display = 'inline-block';
+
+    const letter = part2E > part2C ? 'E' : 'C';
+    const text = letter === 'E'
+      ? "你已经完成了一半试题啦！你得到的第二个神秘字母是：E。请你记好这个字母，让我们继续测试！"
+      : "你已经完成了一半试题啦！你得到的第二个神秘字母是：C。请你记好这个字母，让我们继续测试！";
+
+    resultBox.textContent = text;
+    document.getElementById('part2-nextBtn').setAttribute('data-letter', letter);
+    resultBox.style.display = 'block';
+  }
+
+  function goToPart3() {
+    const letter = document.getElementById('part2-nextBtn').getAttribute('data-letter');
+    window.part2Letter = letter;
+    document.getElementById('part2-container').style.display = 'none';
+    document.getElementById('part3-container').style.display = 'block';
+    buildPart3Slides();
+  }
+</script>
+<!-- 第三部分 -->
+<div class="slider-container" id="part3-container" style="display:none;">
+  <div id="part3-slides"></div>
+  <div class="result" id="part3-result" style="display:none;"></div>
+  <button id="part3-nextBtn" class="next-button" style="display:none;" onclick="goToPart4()">继续测试</button>
+</div>
+
+<script>
+  const part3Questions = [
+    {
+      text: "我的英语水平还不错。",
+      b: [1, 2, 3, 4, 5, 6],
+      s: [6, 5, 4, 3, 2, 1]
+    },
+    {
+      text: "在学习过程中，我更倾向于老师为我布置任务，而不是自己独立完成。",
+      b: [1, 2, 3, 4, 5, 6],
+      s: [6, 5, 4, 3, 2, 1]
+    },
+    {
+      text: "当我在做一个项目遇到问题时，我可以自己找到解决的方法。",
+      b: [1, 2, 3, 4, 5, 6],
+      s: [6, 5, 4, 3, 2, 1]
+    },
+    {
+      text: "我不喜欢太过高压（卷）的学习环境。",
+      b: [6, 5, 4, 3, 2, 1], // 反向题
+      s: [1, 2, 3, 4, 5, 6]
+    },
+    {
+      text: "我无法消化大部分学习带来的压力，它将持续影响我。",
+      b: [6, 5, 4, 3, 2, 1], // 反向题
+      s: [1, 2, 3, 4, 5, 6]
+    }
+  ];
+
+  const part3OptionsText = [
+    "非常不同意（1分）",
+    "不同意（2分）",
+    "比较不同意（3分）",
+    "比较同意（4分）",
+    "同意（5分）",
+    "非常同意（6分）"
+  ];
+
+  let part3B = 0;
+  let part3S = 0;
+  let current3 = 0;
+
+  function buildPart3Slides() {
+    const container = document.getElementById('part3-slides');
+    part3Questions.forEach((qObj, index) => {
+      const slide = document.createElement('div');
+      slide.className = 'slide' + (index === 0 ? ' active' : '');
+      slide.innerHTML = `<h3>${index + 1}. ${qObj.text}</h3>`;
+      const btnGroup = document.createElement('div');
+      btnGroup.className = 'btn-group';
+
+      part3OptionsText.forEach((label, i) => {
+        const btn = document.createElement('button');
+        btn.textContent = label;
+        btn.onclick = () => {
+          part3B += qObj.b[i];
+          part3S += qObj.s[i];
+          document.querySelectorAll('#part3-slides .slide')[current3].classList.remove('active');
+          current3++;
+          if (current3 < part3Questions.length) {
+            document.querySelectorAll('#part3-slides .slide')[current3].classList.add('active');
+          } else {
+            showPart3Result();
+          }
+        };
+        btnGroup.appendChild(btn);
+      });
+
+      slide.appendChild(btnGroup);
+      container.appendChild(slide);
+    });
+  }
+
+  function showPart3Result() {
+    document.getElementById('part3-slides').style.display = 'none';
+    const resultBox = document.getElementById('part3-result');
+    document.getElementById('part3-nextBtn').style.display = 'inline-block';
+
+    const letter = part3B > part3S ? 'B' : 'S';
+    const text = letter === 'B'
+      ? "我们又得到了一个字母——B。请你记好这个字母，让我们继续测试！"
+      : "我们又得到了一个字母——S。请你记好这个字母，让我们继续测试！";
+
+    resultBox.textContent = text;
+    document.getElementById('part3-nextBtn').setAttribute('data-letter', letter);
+    resultBox.style.display = 'block';
+  }
+
+  function goToPart4() {
+    const letter = document.getElementById('part3-nextBtn').getAttribute('data-letter');
+    window.part3Letter = letter;
+    document.getElementById('part3-container').style.display = 'none';
+    document.getElementById('part4-container').style.display = 'block';
+    buildPart4Slides();
+  }
+</script>
+<!-- 第四部分 -->
+<div class="slider-container" id="part4-container" style="display:none;">
+  <div id="part4-slides"></div>
+  <div class="result" id="part4-result" style="display:none;"></div>
+  <button id="finishBtn" class="next-button" style="display:none;" onclick="showFinalResult()">查看结果</button>
+</div>
+
+<script>
+  const part4Questions = [
+    {
+      text: "我觉得学校里中国人多会让我觉得安心。",
+      t: [1, 2, 3, 4, 5, 6],
+      o: [6, 5, 4, 3, 2, 1]
+    },
+    {
+      text: "我完全不能接受预科，我觉得预科是在浪费我的时间。",
+      t: [1, 2, 3, 4, 5, 6],
+      o: [6, 5, 4, 3, 2, 1]
+    },
+    {
+      text: "身为外国人，我希望学校能为我提供一些更多的支持，像是中文支持、中国社团等。",
+      t: [1, 2, 3, 4, 5, 6],
+      o: [6, 5, 4, 3, 2, 1]
+    },
+    {
+      text: "我更希望我的同学是多元的、多国家的。",
+      t: [6, 5, 4, 3, 2, 1], // 反向题
+      o: [1, 2, 3, 4, 5, 6]
+    },
+    {
+      text: "我不希望班级人数过少，我不喜欢老师对我过多关注。",
+      t: [6, 5, 4, 3, 2, 1], // 反向题
+      o: [1, 2, 3, 4, 5, 6]
+    }
+  ];
+
+  const part4OptionsText = [
+    "非常不同意（1分）",
+    "不同意（2分）",
+    "比较不同意（3分）",
+    "比较同意（4分）",
+    "同意（5分）",
+    "非常同意（6分）"
+  ];
+
+  let part4T = 0;
+  let part4O = 0;
+  let current4 = 0;
+
+  function buildPart4Slides() {
+    const container = document.getElementById('part4-slides');
+    part4Questions.forEach((qObj, index) => {
+      const slide = document.createElement('div');
+      slide.className = 'slide' + (index === 0 ? ' active' : '');
+      slide.innerHTML = `<h3>${index + 1}. ${qObj.text}</h3>`;
+      const btnGroup = document.createElement('div');
+      btnGroup.className = 'btn-group';
+
+      part4OptionsText.forEach((label, i) => {
+        const btn = document.createElement('button');
+        btn.textContent = label;
+        btn.onclick = () => {
+          part4T += qObj.t[i];
+          part4O += qObj.o[i];
+          document.querySelectorAll('#part4-slides .slide')[current4].classList.remove('active');
+          current4++;
+          if (current4 < part4Questions.length) {
+            document.querySelectorAll('#part4-slides .slide')[current4].classList.add('active');
+          } else {
+            showPart4Result();
+          }
+        };
+        btnGroup.appendChild(btn);
+      });
+
+      slide.appendChild(btnGroup);
+      container.appendChild(slide);
+    });
+  }
+
+  function showPart4Result() {
+    document.getElementById('part4-slides').style.display = 'none';
+    const resultBox = document.getElementById('part4-result');
+    document.getElementById('finishBtn').style.display = 'inline-block';
+
+    const letter = part4T > part4O ? 'T' : 'O';
+    const text = letter === 'T'
+      ? "恭喜你获得了所有字母！你的最后一个字母是：T！请你记好这个字母，我们马上就完成了！"
+      : "恭喜你获得了所有字母！你的最后一个字母是：O！请你记好这个字母，我们马上就完成了！";
+
+    resultBox.textContent = text;
+    document.getElementById('finishBtn').setAttribute('data-letter', letter);
+    resultBox.style.display = 'block';
+  }
+</script>
+<!-- 最终结果展示 -->
+<div class="slider-container" id="final-result-container" style="display:none;">
+  <div class="result" id="finalText" style="padding: 30px; text-align: center;"></div>
+</div>
+
+<script>
+  function showFinalResult() {
+    const l1 = window.part1Letter;
+    const l2 = window.part2Letter;
+    const l3 = window.part3Letter;
+    const l4 = document.getElementById('finishBtn').getAttribute('data-letter');
+    const code = `${l1}${l2}${l3}${l4}`;
+    document.getElementById('part4-container').style.display = 'none';
+    document.getElementById('final-result-container').style.display = 'block';
+
+    const schoolMap = {
+  HEBO: {
+    main: "牛津、剑桥、纽卡斯尔",
+    alt: "HEBT-伦敦大学、爱丁堡、南安普顿、兰卡斯特、布鲁内尔、金史密斯（金匠）"
+  },
+  HEBT: {
+    main: "伦敦大学、爱丁堡、南安普顿、兰卡斯特、布鲁内尔、金史密斯（金匠）",
+    alt: "HEBO-牛津、剑桥、纽卡斯尔"
+  },
+  HEST: {
+    main: "格拉斯哥艺术学院、金斯顿、伦艺",
+    alt: "HESO-雷丁、诺森比亚、考文垂、曼彻斯特城市大学"
+  },
+  LEST: {
+    main: "伯恩茅斯、中央兰开夏、谢菲尔德哈莱姆、贝尔法斯特艺术学院",
+    alt: "LESO-密德萨斯、罗伯特戈登、诺桑比亚、巴斯斯巴、诺维奇艺术大学"
+  },
+  LEBT: {
+    main: "德蒙福特、东伦敦",
+    alt: "LEBO-亚伯、布莱顿、拉夫堡"
+  },
+  LCST: {
+    main: "布里斯托、林肯、索尔福德、北安普顿",
+    alt: "LCSO-利兹贝克特、德比、索伦特、约克圣约翰、卡迪夫城市大学、利物浦霍普、奇切斯特、切斯特、新白金汉、史丹福郡、桑德兰"
+  },
+  LCBT: {
+    main: "威斯敏斯特、利物浦约翰摩尔、伍尔弗汉普顿、创意艺术大学、法尔茅斯",
+    alt: "LCBO-伯明翰城市大学、雷克瑟姆"
+  },
+  HCBT: {
+    main: "邓迪、提赛德",
+    alt: "HCBO-哈德斯菲尔德"
+  },
+  HCST: {
+    main: "诺丁汉特伦特、利兹艺术",
+    alt: "HCSO-牛津布鲁克斯、赫尔、阿尔斯特、普利茅斯艺术、三一圣大卫"
+  },
+  HESO: {
+    main: "雷丁、诺森比亚、考文垂、曼彻斯特城市大学",
+    alt: "HEST-伯恩茅斯、中央兰开夏、谢菲尔德哈莱姆、贝尔法斯特艺术学院"
+  },
+  HCSO: {
+    main: "牛津布鲁克斯、赫尔、阿尔斯特、普利茅斯艺术、三一圣大卫",
+    alt: "HCST-诺丁汉特伦特、利兹艺术"
+  },
+  LCSO: {
+    main: "利兹贝克特、德比、索伦特、约克圣约翰、卡迪夫城市大学、利物浦霍普、奇切斯特、切斯特、新白金汉、史丹福郡、桑德兰",
+    alt: "LCST-布里斯托、林肯、索尔福德、北安普顿"
+  },
+  HCBO: {
+    main: "哈德斯菲尔德",
+    alt: "HCBT-邓迪、提赛德"
+  },
+  LESO: {
+    main: "密德萨斯、罗伯特戈登、诺桑比亚、巴斯斯巴、诺维奇艺术大学",
+    alt: "LEST-伯恩茅斯、中央兰开夏、谢菲尔德哈莱姆、贝尔法斯特艺术学院"
+  },
+  LEBO: {
+    main: "亚伯、布莱顿、拉夫堡",
+    alt: "LEBT-德蒙福特、东伦敦"
+  },
+  LCBO: {
+    main: "伯明翰城市大学、雷克瑟姆",
+    alt: "LCBT-威斯敏斯特、利物浦约翰摩尔、伍尔弗汉普顿、创意艺术大学、法尔茅斯"
+  }
+};
+
+const schoolResult = schoolMap[code];
+
+const resultText = schoolResult
+  ? `🎉 恭喜你完成测试！<br><br>你的匹配人格是：<strong>${code}</strong><br><br>
+      推荐与你气质相符的学校有：<br><strong>${schoolResult.main}</strong><br><br>
+      如果你不满意，也可以看看这些备选学校：<br><em>${schoolResult.alt}</em>`
+  : `你完成了测试，获得的编码是：<strong>${code}</strong>，但我们未匹配到学校组合～`;
+
+
+    document.getElementById('finalText').innerHTML = resultText;
+
+// ✅ 替换为表单方式提交
+const formData = new FormData();
+formData.append('code', code);
+
+fetch("https://script.google.com/macros/s/AKfycbwPkZVrZBEkA8xzl-CFnhfiV3vJs4RdIMvvC5iwYQbTgy2-36b0X77_7_IUW2bnlqOGVA/exec", {
+  method: "POST",
+  body: formData
+});
+  }
+</script>
+
+</body>
+</html>
